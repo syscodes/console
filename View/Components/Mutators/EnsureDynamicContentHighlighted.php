@@ -20,32 +20,24 @@
  * @license     https://opensource.org/licenses/BSD-3-Clause New BSD license or see https://lenevor.com/license or see /license.md
  */
 
-namespace Syscodes\Components\Console\View\Components;
-
-use Symfony\Component\Console\Output\OutputInterface;
+namespace Syscodes\Components\Console\View\Components\Mutators;
 
 /**
- * Renders the alert component.
+ * Allows that teh content have option bold.
  */
-class Alert extends Component
+class EnsureDynamicContentHighlighted
 {
     /**
-     * Renders the component using the given arguments.
-     *
-     * @param  string  $string
-     * @param  int  $verbosity
+     * Magic Method.
      * 
-     * @return void
+     * Highlight dynamic content within the given string.
+     * 
+     * @param  string  $string
+     * 
+     * @return string
      */
-    public function render($string, $verbosity = OutputInterface::VERBOSITY_NORMAL)
+    public function __invoke($string): string
     {
-        $string = $this->mutate($string, [
-            Mutators\EnsureDynamicContentHighlighted::class,
-            Mutators\EnsureRelativePaths::class,
-        ]);
-
-        $this->renderView('alert', [
-            'content' => $string,
-        ], $verbosity);
+        return preg_replace('/\[([^\]]+)\]/', '<options=bold>[$1]</>', (string) $string);
     }
 }

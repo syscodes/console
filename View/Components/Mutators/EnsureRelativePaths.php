@@ -20,32 +20,28 @@
  * @license     https://opensource.org/licenses/BSD-3-Clause New BSD license or see https://lenevor.com/license or see /license.md
  */
 
-namespace Syscodes\Components\Console\View\Components;
-
-use Symfony\Component\Console\Output\OutputInterface;
+namespace Syscodes\Components\Console\View\Components\Mutators;
 
 /**
- * Renders the alert component.
+ * Allows get relative path.
  */
-class Alert extends Component
+class EnsureRelativePaths
 {
     /**
-     * Renders the component using the given arguments.
-     *
-     * @param  string  $string
-     * @param  int  $verbosity
+     * Magic Method.
      * 
-     * @return void
+     * Ensures the given string only contains relative paths.
+     * 
+     * @param  string  $string
+     * 
+     * @return string
      */
-    public function render($string, $verbosity = OutputInterface::VERBOSITY_NORMAL)
+    public function __invoke($string): string
     {
-        $string = $this->mutate($string, [
-            Mutators\EnsureDynamicContentHighlighted::class,
-            Mutators\EnsureRelativePaths::class,
-        ]);
-
-        $this->renderView('alert', [
-            'content' => $string,
-        ], $verbosity);
+        if (function_exists('app') && app()->has('path.base')) {
+            $string = str_replace(base_path().'/', '', $string);
+        }
+        
+        return $string;
     }
 }
